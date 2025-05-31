@@ -204,6 +204,23 @@ function consultaDistribuidor()
 
         $registro = $resultado->fetch_assoc();
 
+        if ($registro['est_usuario'] == 0) {
+
+            $response = array(
+                'estadoRes' => 'error',
+                'msg' => 'Distribuidor NO existe',
+                'datos' => null
+            );
+        } else {
+
+            $response = array(
+                'estadoRes' => 'success',
+                'msg' => '',
+                'datos' => $registro
+            );
+        }
+
+
         $response = array(
             'estadoRes' => 'success',
             'msg' => '',

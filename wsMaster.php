@@ -101,12 +101,25 @@ function actualizaTipoNeg()
 function listaTipoNeg()
 {
 
+    global $params;
+
     $conexion = Conexion::getInstance()->getConnection();
 
-    $consulta = "SELECT cod_tipo_neg, nom_tipo_neg, est_tipo_neg 
+    $filtro = isset($params['filtro']) ? params_get('filtro') : 0;
+
+    if ($filtro == 1) {
+        $consulta = "SELECT cod_tipo_neg, nom_tipo_neg, est_tipo_neg 
+                    FROM master_tipo_neg 
+                    WHERE est_tipo_neg=1
+                    ORDER BY nom_tipo_neg";
+    } else {
+        $consulta = "SELECT cod_tipo_neg, nom_tipo_neg, est_tipo_neg 
                     FROM master_tipo_neg 
                     WHERE 1
                     ORDER BY nom_tipo_neg";
+    }
+
+
 
     $response = [];
 
@@ -122,6 +135,3 @@ function listaTipoNeg()
 
     return $response;
 }
-
-
-

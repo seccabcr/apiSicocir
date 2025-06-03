@@ -125,6 +125,28 @@ function apiSicocir_init()
             'access' => 'users_openAccess',
             'access_params' => 'accessName',
             'file' => 'wsMaster.php',
+        ),
+        // Scripts clientes
+         array(
+            'r' => 'actualiza_cliente',
+            'action' => 'actualizaCliente',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+         ),
+          array(
+            'r' => 'consulta_cliente',
+            'action' => 'consultaCliente',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+        ),
+          array(
+            'r' => 'llena_tabla_clientes',
+            'action' => 'llenaTablaClientes',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
         )
 
     );

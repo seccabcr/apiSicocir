@@ -147,7 +147,38 @@ function apiSicocir_init()
             'access' => 'users_openAccess',
             'access_params' => 'accessName',
             'file' => 'wsClientes.php',
-        )
+          ),
+
+          // Scripts ventas
+           array(
+            'r' => 'consulta_fechas_picking',
+            'action' => 'consultaFechasPicking',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+           ),
+            array(
+            'r' => 'actualiza_picking_diario',
+            'action' => 'actualizaPickingDiario',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+          ),
+            array(
+            'r' => 'lista_entrega_diaria_pdvs',
+            'action' => 'listaEntregaDiariaPdvs',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+          ),
+            array(
+            'r' => 'actualiza_entrega_diaria',
+            'action' => 'actualizaEntregaDiaria',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+          ),
+
 
     );
 

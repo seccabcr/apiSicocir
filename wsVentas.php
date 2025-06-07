@@ -80,7 +80,7 @@ function listaEntregaDiariaPdvs()
 
     $conexion = Conexion::getInstance()->getConnection();
 
-    $fecha_ent = params_get('fec_entrega');    
+    $fecha_ent = params_get('fec_entrega');
     $cod_distri = params_get('cod_distri');
     $cod_item = params_get('cod_item');
 
@@ -140,4 +140,40 @@ function actualizaEntregaDiaria()
         'estadoRes' => 'success',
         'msg' => 'Entrega Actualizada'
     );
+}
+
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function listaLiqDiariaPdv()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+
+    $cod_cliente = params_get('cod_cliente');
+    $cod_item = params_get('cod_item');
+    $fecha_ini = params_get('fecha_ini');
+    $fecha_fin = params_get('fecha_fin');
+
+    $consulta = "SELECT fec_entrega, can_entrega, can_dev, est_mov FROM clientes_mov AS mov
+                INNER JOIN clientes AS c ON c.cod_cliente=mov.cod_cliente
+                WHERE c.cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega BETWEEN '$fecha_ini' AND '$fecha_fin'";
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
 }

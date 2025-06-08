@@ -153,7 +153,6 @@ function listaLiqDiariaPdv()
 
     $conexion = Conexion::getInstance()->getConnection();
 
-
     $cod_cliente = params_get('cod_cliente');
     $cod_item = params_get('cod_item');
     $fecha_ini = params_get('fecha_ini');
@@ -176,4 +175,85 @@ function listaLiqDiariaPdv()
     }
 
     return $response;
+}
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function actualizaLiqDiaria()
+{
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_cliente = params_get('cod_cliente');
+    $fec_entrega = params_get('fec_entrega');
+    $can_dev = params_get('can_dev');
+    $cod_item = 1;
+    $id_usu_reg = params_get('id_usu_reg');
+
+    $fec_reg = date("Y-m-d H:i:s");
+
+    $sql = "SELECT * FROM clientes_mov WHERE cod_cliente=$cod_cliente AND fec_entrega='$fec_entrega' AND cod_item=$cod_item";
+
+    $resultado = $conexion->query($sql);
+
+    $response = array(
+        'estadoRes' => 'error',
+        'msg' => 'Fecha Liquidación NO puede ser actualizada'
+    );
+
+    if ($resultado->num_rows > 0) {
+
+        $registro = $resultado->fetch_assoc();
+
+        if ($registro['est_mov'] == 0) {
+
+            $response = array(
+                'estadoRes' => 'error',
+                'msg' => 'Fecha Liquidación NO puede ser actualizada'
+            );
+        } else {
+
+            $update = "UPDATE clientes_mov SET can_dev=$can_dev, fec_liq='$fec_reg', fec_reg='$fec_reg', id_usu_reg='$id_usu_reg' WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega='$fec_entrega'";
+            $conexion->query($update);
+
+            $response = array(
+                'estadoRes' => 'success',
+                'msg' => 'Liquidación Actualizada'
+            );
+        }
+    }
+
+    return $response;
+}
+
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function actualizaCierre()
+{
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_dis = params_get('cod_dis');
+    $fec_ini = params_get('fec_ini');
+    $fec_fin = params_get('fec_fin');
+    $est_mov = params_get('est_mov');
+
+
+    $update = "UPDATE clientes_mov AS mov
+                INNER JOIN clientes AS c ON mov.cod_cliente=c.cod_cliente
+                SET mov.est_mov=$est_mov
+                WHERE c.cod_distri=$cod_dis AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'";
+
+
+    $conexion->query($update);
+
+    return array(
+        'estadoRes' => 'success',
+        'msg' => 'Cambio estado cierre aplicado'
+    );
 }

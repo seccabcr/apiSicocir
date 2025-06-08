@@ -59,6 +59,26 @@ function actualizaUsuario()
 
 /************************************************************************************************ */
 
+
+function reseteaPin()
+{
+    $conexion = Conexion::getInstance()->getConnection();
+
+
+    $cod_usu = params_get('cod_usu');
+
+    $update = "UPDATE usuarios SET pin_pass='1234' WHERE cod_usuario=$cod_usu";
+    $conexion->query($update);
+
+    return array(
+        'estadoRes' => 'success',
+        'msg' => 'PIN reseteado'
+    );
+}
+
+/************************************************************************************************ */
+
+
 function listaUsuarios()
 {
 

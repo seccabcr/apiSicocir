@@ -134,11 +134,146 @@ function llenaTablaClientes()
     } else {
 
 
-     $consulta = "SELECT cod_cliente, nom_cliente 
+        $consulta = "SELECT cod_cliente, nom_cliente 
                     FROM clientes
                     WHERE cod_distri=$cod_distri
                     ORDER BY nom_cliente";
     }
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
+/************************************************************************************ */
+function consultaItemMerchaPdv()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_cliente = params_get('cod_cliente');
+    $cod_item = params_get('cod_item');
+
+    $consulta = "SELECT can_item FROM clientes_mer                
+                WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+
+    $resultado = $conexion->query($consulta);
+
+    $response = null;
+
+    if ($resultado->num_rows > 0) {
+
+        $registro = $resultado->fetch_assoc();
+
+        $response = $registro;
+    }
+
+    return $response;
+}
+
+
+/****************************************************************************************** */
+
+function listaItemsMerchaPdv()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_cliente = params_get('cod_cliente');
+
+    $consulta = "SELECT cm.cod_item, nom_item, can_item 
+                FROM clientes_mer AS cm
+                INNER JOIN master_items as i ON i.cod_item=cm.cod_item
+                WHERE cm.cod_cliente=$cod_cliente";
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
+/************************************************************************************ */
+function actualizaItemMerchaPdv()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_cliente = params_get('cod_cliente');
+    $cod_item = params_get('cod_item');
+    $can_item = params_get('can_item');
+
+    $consulta = "SELECT * FROM clientes_mer WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows == 0) {
+
+        $insert = "INSERT INTO clientes_mer(cod_cliente, cod_item, can_item) VALUES($cod_cliente, $cod_item, $can_item)";
+        $conexion->query($insert);
+    } else {
+
+        $update = "UPDATE clientes_mer SET can_item=$can_item WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+        $conexion->query($update);
+    }
+
+    return array(
+        'msg' => 'Item Actualizado'
+    );
+}
+
+
+/************************************************************************************ */
+function eliminaItemMerchaPdv()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_cliente = params_get('cod_cliente');
+    $cod_item = params_get('cod_item');
+
+
+    $delete = "DELETE FROM clientes_mer WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+    $conexion->query($delete);
+
+
+
+    return array(
+        'msg' => 'Item Eliminado'
+    );
+}
+
+
+/****************************************************************************************** */
+
+function listaClientes()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_distri = params_get('cod_distri');
+
+    $consulta = "SELECT cod_cliente, nom_cliente, nom_tipo_neg, fec_reg, estado_cli FROM clientes AS c
+                INNER JOIN master_tipo_neg as tn ON tn.cod_tipo_neg=c.tipo_negocio
+                WHERE cod_distri=$cod_distri";
 
     $response = [];
 

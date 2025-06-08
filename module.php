@@ -96,6 +96,14 @@ function apiSicocir_init()
             'access_params' => 'accessName',
             'file' => 'wsUsuarios.php',
         ),
+        array(
+            'r' => 'resetea_pin',
+            'action' => 'reseteaPin',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsUsuarios.php',
+        ),
+
 
         // Scripts master
         array(
@@ -148,6 +156,41 @@ function apiSicocir_init()
             'access_params' => 'accessName',
             'file' => 'wsClientes.php',
         ),
+          array(
+            'r' => 'lista_items_mercha_pdv',
+            'action' => 'listaItemsMerchaPdv',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+        ),
+        array(
+            'r' => 'consulta_item_mercha_pdv',
+            'action' => 'consultaItemMerchaPdv',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+        ),
+         array(
+            'r' => 'actualiza_item_mercha_pdv',
+            'action' => 'actualizaItemMerchaPdv',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+        ),
+         array(
+            'r' => 'elimina_item_mercha_pdv',
+            'action' => 'eliminaItemMerchaPdv',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+        ),
+        array(
+            'r' => 'lista_clientes',
+            'action' => 'listaClientes',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsClientes.php',
+        ),
 
         // Scripts ventas
         array(
@@ -181,6 +224,20 @@ function apiSicocir_init()
         array(
             'r' => 'lista_liq_diaria_pdv',
             'action' => 'listaLiqDiariaPdv',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'actualiza_liq_diaria',
+            'action' => 'actualizaLiqDiaria',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'actualiza_cierre',
+            'action' => 'actualizaCierre',
             'access' => 'users_openAccess',
             'access_params' => 'accessName',
             'file' => 'wsVentas.php',

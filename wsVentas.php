@@ -160,7 +160,8 @@ function listaLiqDiariaPdv()
 
     $consulta = "SELECT fec_entrega, can_entrega, can_dev, est_mov FROM clientes_mov AS mov
                 INNER JOIN clientes AS c ON c.cod_cliente=mov.cod_cliente
-                WHERE c.cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega BETWEEN '$fecha_ini' AND '$fecha_fin'";
+                WHERE c.cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega BETWEEN '$fecha_ini' AND '$fecha_fin'
+                ORDER BY fec_entrega DESC";
 
     $response = [];
 

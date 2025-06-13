@@ -258,3 +258,158 @@ function actualizaCierre()
         'msg' => 'Cambio estado cierre aplicado'
     );
 }
+
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function resumenEntregasxDSD()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $fec_ini = params_get('fec_ini');
+    $fec_fin = params_get('fec_fin');   
+    $cod_item = params_get('cod_item');
+
+    $consulta = "SELECT cod_usuario, nom_usuario, SUM(can_entrega) AS can_entrega FROM clientes_mov AS mov
+                    INNER JOIN clientes AS c ON c.cod_cliente=mov.cod_cliente
+                    INNER JOIN usuarios AS u ON u.cod_usuario=c.cod_distri
+                    WHERE cod_item=$cod_item AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'
+                    GROUP BY nom_usuario
+                    ORDER BY nom_usuario";
+
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function resumenEntregasxPDV()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_dis = params_get('cod_distri');
+    $fec_ini = params_get('fec_ini');
+    $fec_fin = params_get('fec_fin');   
+    $cod_item = params_get('cod_item');
+
+    $consulta = "SELECT mov.cod_cliente, nom_cliente, SUM(can_entrega) AS can_entrega FROM clientes_mov AS mov
+                    INNER JOIN clientes AS c ON c.cod_cliente=mov.cod_cliente
+                    INNER JOIN usuarios AS u ON u.cod_usuario=c.cod_distri
+                    WHERE cod_usuario= $cod_dis AND cod_item=$cod_item AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'
+                    GROUP BY cod_cliente
+                    ORDER BY nom_cliente";
+
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function resumenLiquidacionxDSD()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $fec_ini = params_get('fec_ini');
+    $fec_fin = params_get('fec_fin');   
+    $cod_item = params_get('cod_item');
+
+    $consulta = "SELECT cod_usuario, nom_usuario, SUM(can_entrega) AS can_entrega, SUM(can_dev) AS can_dev FROM clientes_mov AS mov
+                    INNER JOIN clientes AS c ON c.cod_cliente=mov.cod_cliente
+                    INNER JOIN usuarios AS u ON u.cod_usuario=c.cod_distri
+                    WHERE cod_item=$cod_item AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'
+                    GROUP BY cod_usuario
+                    ORDER BY nom_usuario";
+
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function resumenLiquidacionxPDV()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_dis = params_get('cod_dis');
+    $fec_ini = params_get('fec_ini');
+    $fec_fin = params_get('fec_fin');   
+    $cod_item = params_get('cod_item');
+
+    $consulta = "SELECT mov.cod_cliente, nom_cliente, SUM(can_entrega) AS can_entrega, SUM(can_dev) AS can_dev FROM clientes_mov AS mov
+                    INNER JOIN clientes AS c ON c.cod_cliente=mov.cod_cliente
+                    INNER JOIN usuarios AS u ON u.cod_usuario=c.cod_distri
+                    WHERE cod_usuario =$cod_dis AND cod_item=$cod_item AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'
+                    GROUP BY cod_cliente
+                    ORDER BY nom_cliente";
+
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+

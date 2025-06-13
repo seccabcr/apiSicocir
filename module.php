@@ -241,7 +241,36 @@ function apiSicocir_init()
             'access' => 'users_openAccess',
             'access_params' => 'accessName',
             'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'resumen_entregas_dsd',
+            'action' => 'resumenEntregasxDSD',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'resumen_entregas_pdv',
+            'action' => 'resumenEntregasxPDV',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'resumen_liquidacion_dsd',
+            'action' => 'resumenLiquidacionxDSD',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'resumen_liquidacion_pdv',
+            'action' => 'resumenLiquidacionxPDV',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
         )
+
 
     );
 

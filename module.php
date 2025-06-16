@@ -103,7 +103,13 @@ function apiSicocir_init()
             'access_params' => 'accessName',
             'file' => 'wsUsuarios.php',
         ),
-
+        array(
+            'r' => 'consulta_precio_dsd',
+            'action' => 'consultaPrecioDSD',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsUsuarios.php',
+        ),
 
         // Scripts master
         array(
@@ -156,7 +162,7 @@ function apiSicocir_init()
             'access_params' => 'accessName',
             'file' => 'wsClientes.php',
         ),
-          array(
+        array(
             'r' => 'lista_items_mercha_pdv',
             'action' => 'listaItemsMerchaPdv',
             'access' => 'users_openAccess',
@@ -170,14 +176,14 @@ function apiSicocir_init()
             'access_params' => 'accessName',
             'file' => 'wsClientes.php',
         ),
-         array(
+        array(
             'r' => 'actualiza_item_mercha_pdv',
             'action' => 'actualizaItemMerchaPdv',
             'access' => 'users_openAccess',
             'access_params' => 'accessName',
             'file' => 'wsClientes.php',
         ),
-         array(
+        array(
             'r' => 'elimina_item_mercha_pdv',
             'action' => 'eliminaItemMerchaPdv',
             'access' => 'users_openAccess',
@@ -266,6 +272,13 @@ function apiSicocir_init()
         array(
             'r' => 'resumen_liquidacion_pdv',
             'action' => 'resumenLiquidacionxPDV',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsVentas.php',
+        ),
+        array(
+            'r' => 'lista_precios_gen',
+            'action' => 'listaPreciosGen',
             'access' => 'users_openAccess',
             'access_params' => 'accessName',
             'file' => 'wsVentas.php',

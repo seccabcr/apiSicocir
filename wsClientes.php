@@ -271,7 +271,7 @@ function listaClientes()
 
     $cod_distri = params_get('cod_distri');
 
-    $consulta = "SELECT cod_cliente, nom_cliente, nom_tipo_neg, fec_reg, estado_cli FROM clientes AS c
+    $consulta = "SELECT cod_cliente, nom_cliente, nom_tipo_neg, fec_reg, estado_cli, latitud, longitud FROM clientes AS c
                 INNER JOIN master_tipo_neg as tn ON tn.cod_tipo_neg=c.tipo_negocio
                 WHERE cod_distri=$cod_distri";
 

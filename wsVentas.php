@@ -104,6 +104,9 @@ function listaEntregaDiariaPdvs()
     return $response;
 }
 
+
+
+
 /**********************************************************************************************************
  * 
  * 
@@ -117,22 +120,58 @@ function actualizaEntregaDiaria()
     $fec_entrega = params_get('fec_entrega');
     $can_entrega = params_get('can_entrega');
     $cod_item = 1;
+    $pre_item = params_get('pre_item');
     $id_usu_reg = params_get('id_usu_reg');
-
+    
 
     $fec_reg = date("Y-m-d H:i:s");
 
-    $sql = "SELECT can_entrega FROM clientes_mov WHERE cod_cliente=$cod_cliente AND fec_entrega='$fec_entrega' AND cod_item=$cod_item";
+    $sql = "SELECT * FROM clientes_mov WHERE cod_cliente=$cod_cliente AND fec_entrega='$fec_entrega' AND cod_item=$cod_item";
+
+    $can_ent_ant = 0;
 
     $resultado = $conexion->query($sql);
 
     if ($resultado->num_rows == 0) {
 
-        $insert = "INSERT INTO clientes_mov (cod_cliente, fec_entrega, cod_item, can_entrega, fec_reg, id_usu_reg) VALUES($cod_cliente, '$fec_entrega', $cod_item, $can_entrega, '$fec_reg', '$id_usu_reg')";
+        $insert = "INSERT INTO clientes_mov (cod_cliente, fec_entrega, cod_item, pre_item, can_entrega, fec_reg, id_usu_reg) VALUES($cod_cliente, '$fec_entrega', $cod_item, $pre_item, $can_entrega, '$fec_reg', '$id_usu_reg')";
         $conexion->query($insert);
     } else {
 
-        $update = "UPDATE clientes_mov SET can_entrega=$can_entrega, fec_reg='$fec_reg', id_usu_reg='$id_usu_reg' WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega='$fec_entrega'";
+        $registro = $resultado->fetch_assoc();
+        $est_mov = $registro['est_mov'];
+
+        if ($registro['est_mov'] == 2) {
+
+            return array(
+                'estadoRes' => 'error',
+                'msg' => 'Fecha Entrega NO puede ser modificada. Liquidación Cerrada'
+            );
+        }
+
+        $can_ent_ant = $registro['can_entrega'];
+
+        $update = "UPDATE clientes_mov SET pre_item=$pre_item, can_entrega=$can_entrega, fec_reg='$fec_reg', id_usu_reg='$id_usu_reg' WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega='$fec_entrega'";
+        $conexion->query($update);
+    }
+
+    // Rutina para actualiza el saldo en consignacion del PDV
+
+    $sql = "SELECT sal_consigna FROM clientes_con WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+
+    $res_saldo =  $conexion->query($sql);
+
+    if ($res_saldo->num_rows == 0) {
+
+        $insert = "INSERT INTO clientes_con (cod_cliente, cod_item, sal_consigna) VALUES($cod_cliente, $cod_item, $can_entrega)";
+        $conexion->query($insert);
+    } else if ($est_mov == 0) {
+
+        $regMov = $res_saldo->fetch_assoc();
+
+        $nuevoSaldo = $regMov['sal_consigna'] + $can_entrega - $can_ent_ant;
+
+        $update = "UPDATE clientes_con SET sal_consigna=$nuevoSaldo WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
         $conexion->query($update);
     }
 
@@ -141,6 +180,8 @@ function actualizaEntregaDiaria()
         'msg' => 'Entrega Actualizada'
     );
 }
+
+
 
 
 /**********************************************************************************************************
@@ -208,16 +249,42 @@ function actualizaLiqDiaria()
 
         $registro = $resultado->fetch_assoc();
 
-        if ($registro['est_mov'] == 0) {
+        $can_ent = $registro['can_entrega'];
+        $est_mov = $registro['est_mov'];
+
+        // Verifica si estado de movimiento esta liquidado y cerrado
+
+        if ($registro['est_mov'] == 2) {
 
             $response = array(
                 'estadoRes' => 'error',
-                'msg' => 'Fecha Liquidación NO puede ser actualizada'
+                'msg' => 'Fecha Liquidación NO puede ser modificada. Liquidación Cerrada'
             );
         } else {
 
-            $update = "UPDATE clientes_mov SET can_dev=$can_dev, fec_liq='$fec_reg', fec_reg='$fec_reg', id_usu_reg='$id_usu_reg' WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega='$fec_entrega'";
+            $update = "UPDATE clientes_mov SET can_dev=$can_dev, est_mov=1, fec_liq='$fec_reg', fec_reg='$fec_reg', id_usu_reg='$id_usu_reg' WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item AND fec_entrega='$fec_entrega'";
             $conexion->query($update);
+
+
+            // Rutina para actualiza el saldo en consignacion del PDV
+
+            if ($est_mov == 0) {
+
+                $sql = "SELECT sal_consigna FROM clientes_con WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+
+                $res_saldo =  $conexion->query($sql);
+
+                if ($res_saldo->num_rows > 0) {
+
+                    $reg_saldo = $res_saldo->fetch_assoc();
+
+                    $nuevoSaldo = $reg_saldo['sal_consigna'] - $can_ent;
+
+                    $update = "UPDATE clientes_con SET sal_consigna=$nuevoSaldo WHERE cod_cliente=$cod_cliente AND cod_item=$cod_item";
+                    $conexion->query($update);
+                }
+            }
+
 
             $response = array(
                 'estadoRes' => 'success',
@@ -244,11 +311,10 @@ function actualizaCierre()
     $fec_fin = params_get('fec_fin');
     $est_mov = params_get('est_mov');
 
-
     $update = "UPDATE clientes_mov AS mov
                 INNER JOIN clientes AS c ON mov.cod_cliente=c.cod_cliente
                 SET mov.est_mov=$est_mov
-                WHERE c.cod_distri=$cod_dis AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'";
+                WHERE c.cod_distri=$cod_dis AND est_mov > 0 AND fec_entrega BETWEEN '$fec_ini' AND '$fec_fin'";
 
 
     $conexion->query($update);
@@ -271,7 +337,7 @@ function resumenEntregasxDSD()
     $conexion = Conexion::getInstance()->getConnection();
 
     $fec_ini = params_get('fec_ini');
-    $fec_fin = params_get('fec_fin');   
+    $fec_fin = params_get('fec_fin');
     $cod_item = params_get('cod_item');
 
     $consulta = "SELECT cod_usuario, nom_usuario, SUM(can_entrega) AS can_entrega FROM clientes_mov AS mov
@@ -310,7 +376,7 @@ function resumenEntregasxPDV()
 
     $cod_dis = params_get('cod_distri');
     $fec_ini = params_get('fec_ini');
-    $fec_fin = params_get('fec_fin');   
+    $fec_fin = params_get('fec_fin');
     $cod_item = params_get('cod_item');
 
     $consulta = "SELECT mov.cod_cliente, nom_cliente, SUM(can_entrega) AS can_entrega FROM clientes_mov AS mov
@@ -348,7 +414,7 @@ function resumenLiquidacionxDSD()
     $conexion = Conexion::getInstance()->getConnection();
 
     $fec_ini = params_get('fec_ini');
-    $fec_fin = params_get('fec_fin');   
+    $fec_fin = params_get('fec_fin');
     $cod_item = params_get('cod_item');
 
     $consulta = "SELECT cod_usuario, nom_usuario, SUM(can_entrega) AS can_entrega, SUM(can_dev) AS can_dev FROM clientes_mov AS mov
@@ -387,7 +453,7 @@ function resumenLiquidacionxPDV()
 
     $cod_dis = params_get('cod_dis');
     $fec_ini = params_get('fec_ini');
-    $fec_fin = params_get('fec_fin');   
+    $fec_fin = params_get('fec_fin');
     $cod_item = params_get('cod_item');
 
     $consulta = "SELECT mov.cod_cliente, nom_cliente, SUM(can_entrega) AS can_entrega, SUM(can_dev) AS can_dev FROM clientes_mov AS mov
@@ -412,4 +478,35 @@ function resumenLiquidacionxPDV()
 
     return $response;
 }
+
+/**********************************************************************************************************
+ * 
+ * 
+ */
+
+function listaPreciosGen()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_item = params_get('cod_item');
+
+   
+    $consulta = "SELECT fec_ini, pre_item FROM precios WHERE cod_item=$cod_item";
+
+    $response = [];
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
 

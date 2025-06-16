@@ -251,6 +251,36 @@ function consultaDistribuidor()
     return $response;
 }
 
+
+/*********************************************************************************************** */
+
+function consultaPrecioDSD()
+{
+
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $cod_usuario = params_get('cod_usuario');
+    $cod_item = params_get('cod_item');
+    $fec_entrega = params_get('fec_entrega');
+
+    $consulta = "SELECT pre_item FROM usuarios_pre WHERE cod_usuario=$cod_usuario AND cod_item=$cod_item AND fec_ini<'$fec_entrega' ORDER BY fec_ini DESC LIMIT 1";
+
+    $response['pre_item'] = 0;
+
+    $resultado = $conexion->query($consulta);
+
+    if ($resultado->num_rows > 0) {
+
+        $registro = $resultado->fetch_assoc();
+
+        $response = $registro;
+    }
+
+    return $response;
+}
+
+
 /**************************************************************************************
  *
     Login usuario

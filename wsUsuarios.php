@@ -114,7 +114,7 @@ function actualizaDistribuidor()
     $cod_usu = params_get('cod_usu');
     $id_usu = params_get('id_usu');
     $nom_usu = params_get('nom_usu');
-    //$nom_comercial = params_get('nom_comercial');
+    $cod_eje = params_get('cod_eje');
     $tipo_usu = 1;
     $est_usu = params_get('est_usu');
 
@@ -139,7 +139,7 @@ function actualizaDistribuidor()
 
 
 
-        $insert = "INSERT INTO usuarios (nom_usuario, id_usuario, tipo_usuario, fec_reg) VALUES('$nom_usu','$id_usu', $tipo_usu, '$fec_reg')";
+        $insert = "INSERT INTO usuarios (nom_usuario, id_usuario, cod_ejecutivo, tipo_usuario, fec_reg) VALUES('$nom_usu','$id_usu', $cod_eje, $tipo_usu, '$fec_reg')";
         $conexion->query($insert);
 
         return array(
@@ -148,7 +148,7 @@ function actualizaDistribuidor()
         );
     } else {
 
-        $update = "UPDATE usuarios SET nom_usuario='$nom_usu', tipo_usuario=$tipo_usu, est_usuario=$est_usu WHERE cod_usuario=$cod_usu";
+        $update = "UPDATE usuarios SET nom_usuario='$nom_usu', cod_ejecutivo=$cod_eje, tipo_usuario=$tipo_usu, est_usuario=$est_usu WHERE cod_usuario=$cod_usu";
         $conexion->query($update);
 
         return array(
@@ -166,23 +166,65 @@ function listaDistribuidores()
     $conexion = Conexion::getInstance()->getConnection();
 
     $filtro = params_get('filtro');
+    $cod_ejecutivo = params_get('cod_ejecutivo');
+    $tipo_usu = params_get('tipo_usu');
 
     if ($filtro == 1) {
-        $consulta = "SELECT cod_usuario, nom_usuario, id_usuario, tipo_usuario, est_usuario 
+
+        if ($tipo_usu < 3) {
+
+            $consulta = "SELECT cod_usuario, nom_usuario, id_usuario, tipo_usuario, est_usuario 
+                    FROM usuarios 
+                    WHERE tipo_usuario = 1 AND est_usuario=1 AND cod_ejecutivo=$cod_ejecutivo
+                    ORDER BY nom_usuario";
+        } else {
+
+            $consulta = "SELECT cod_usuario, nom_usuario, id_usuario, tipo_usuario, est_usuario 
                     FROM usuarios 
                     WHERE tipo_usuario = 1 AND est_usuario=1
                     ORDER BY nom_usuario";
+        }
     } else {
+        if ($tipo_usu > 3) {
 
-
-        $consulta = "SELECT cod_usuario, nom_usuario, id_usuario, tipo_usuario, est_usuario 
+            $consulta = "SELECT cod_usuario, nom_usuario, id_usuario, tipo_usuario, est_usuario 
+                    FROM usuarios 
+                    WHERE tipo_usuario = 1 AND cod_ejecutivo=$cod_ejecutivo
+                    ORDER BY nom_usuario";
+        } else {
+            $consulta = "SELECT cod_usuario, nom_usuario, id_usuario, tipo_usuario, est_usuario 
                     FROM usuarios 
                     WHERE tipo_usuario = 1
                     ORDER BY nom_usuario";
+        }
     }
 
+    $response = [];
 
+    $resultado = $conexion->query($consulta);
 
+    if ($resultado->num_rows > 0) {
+
+        while ($registro = $resultado->fetch_assoc()) {
+
+            $response[] = $registro;
+        }
+    }
+
+    return $response;
+}
+
+/************************************************************************************************ */
+
+function listaEjecutivos()
+{
+
+    $conexion = Conexion::getInstance()->getConnection();
+
+    $consulta = "SELECT cod_usuario, nom_usuario
+                    FROM usuarios 
+                    WHERE tipo_usuario = 2 AND est_usuario=1
+                    ORDER BY nom_usuario";
 
     $response = [];
 
@@ -200,23 +242,21 @@ function listaDistribuidores()
 }
 
 
+
 /*********************************************************************************************** */
 
 function consultaDistribuidor()
 {
 
+    global $params;
 
     $conexion = Conexion::getInstance()->getConnection();
 
     $cod_usuario = params_get('cod_usuario');
+    $cod_ejecutivo = isset($params['cod_ejecutivo']) ? params_get('cod_ejecutivo') : 0; // Recibo el codigo del usuario que consulta
+    $tipo_usu = isset($params['tipo_usu']) ? params_get('tipo_usu') : 2; // Recibe el tipo de usuario que consulta
 
-    $consulta = "SELECT id_usuario, nom_usuario, tipo_usuario, nom_comercial, est_usuario FROM usuarios WHERE cod_usuario=$cod_usuario AND tipo_usuario=1";
-
-    $response = array(
-        'estadoRes' => 'error',
-        'msg' => 'Distribuidor NO existe',
-        'datos' => null
-    );
+    $consulta = "SELECT id_usuario, nom_usuario, tipo_usuario, cod_ejecutivo, est_usuario FROM usuarios WHERE cod_usuario=$cod_usuario AND tipo_usuario=1";
 
     $resultado = $conexion->query($consulta);
 
@@ -226,29 +266,34 @@ function consultaDistribuidor()
 
         if ($registro['est_usuario'] == 0) {
 
-            $response = array(
+            return array(
                 'estadoRes' => 'error',
-                'msg' => 'Distribuidor NO existe',
+                'msg' => 'Distribuidor Inactivo',
                 'datos' => null
             );
-        } else {
+        }
+        if ($registro['cod_ejecutivo'] != $cod_ejecutivo && $tipo_usu < 3) {
 
-            $response = array(
-                'estadoRes' => 'success',
-                'msg' => '',
-                'datos' => $registro
+            return array(
+                'estadoRes' => 'error',
+                'msg' => 'Distribuidor NO asignado a este usuario',
+                'datos' => null
             );
         }
 
-
-        $response = array(
+        return  array(
             'estadoRes' => 'success',
             'msg' => '',
             'datos' => $registro
         );
-    }
+    } else {
 
-    return $response;
+        return array(
+            'estadoRes' => 'error',
+            'msg' => 'Distribuidor NO existe',
+            'datos' => null
+        );
+    }
 }
 
 

@@ -83,6 +83,13 @@ function apiSicocir_init()
             'file' => 'wsUsuarios.php',
         ),
         array(
+            'r' => 'lista_ejecutivos',
+            'action' => 'listaEjecutivos',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsUsuarios.php',
+        ),
+        array(
             'r' => 'actualiza_distribuidor',
             'action' => 'actualizaDistribuidor',
             'access' => 'users_openAccess',

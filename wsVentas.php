@@ -86,7 +86,8 @@ function listaEntregaDiariaPdvs()
 
     $consulta = "SELECT c.cod_cliente, nom_cliente, IFNULL(can_entrega,0) AS can_entrega FROM clientes AS c
                     LEFT JOIN clientes_mov AS mov ON mov.cod_cliente=c.cod_cliente AND cod_item=$cod_item AND fec_entrega='$fecha_ent'
-                    WHERE c.cod_distri=$cod_distri AND estado_cli=1";
+                    WHERE c.cod_distri=$cod_distri AND estado_cli=1
+                    ORDER BY nom_cliente";
 
 
     $response = [];

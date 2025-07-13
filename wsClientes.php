@@ -118,6 +118,8 @@ function consultaCliente()
     }
 }
 
+/************************************************************************** */
+
 function llenaTablaClientes()
 {
 
@@ -127,14 +129,14 @@ function llenaTablaClientes()
     $cod_distri = params_get('cod_distri');
 
     if ($filtro == 1) {
-        $consulta = "SELECT cod_cliente, nom_cliente 
+        $consulta = "SELECT cod_cliente, nom_cliente, CONCAT(provincia,' ,', canton, ',', distrito, ',',otras_sennas) AS direccion 
                     FROM clientes
                     WHERE cod_distri=$cod_distri  AND estado_cli=1
                     ORDER BY nom_cliente";
     } else {
 
 
-        $consulta = "SELECT cod_cliente, nom_cliente 
+        $consulta = "SELECT cod_cliente, nom_cliente, CONCAT(provincia,' ,', canton, ',', distrito, ',',otras_sennas) AS direccion  
                     FROM clientes
                     WHERE cod_distri=$cod_distri
                     ORDER BY nom_cliente";

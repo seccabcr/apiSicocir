@@ -147,6 +147,28 @@ function apiSicocir_init()
             'access_params' => 'accessName',
             'file' => 'wsMaster.php',
         ),
+
+         array(
+            'r' => 'llena_provincias',
+            'action' => 'llenaProvincias',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsDistGeografica.php',
+        ),
+        array(
+            'r' => 'llena_cantones',
+            'action' => 'llenaCantones',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsDistGeografica.php',
+        ),
+        array(
+            'r' => 'llena_distritos',
+            'action' => 'llenaDistritos',
+            'access' => 'users_openAccess',
+            'access_params' => 'accessName',
+            'file' => 'wsDistGeografica.php',
+        ),
         // Scripts clientes
         array(
             'r' => 'actualiza_cliente',

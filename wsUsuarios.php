@@ -327,9 +327,7 @@ function consultaPrecioDSD()
 
 
 /**************************************************************************************
- *
-    Login usuario
-
+ *    Login usuario
  */
 
 function loginUsuario()
